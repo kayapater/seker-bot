@@ -38,6 +38,7 @@ jobs:
             # .env dosyasını GitHub Secrets'tan oluştur
             echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
             echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
+            echo "BOT_STATUS=\"${{ secrets.BOT_STATUS }}\"" >> .env
             
             # Eğer varsa sunucuya özel diğer ayarları da ekleyelim (Örn: GUILD_ID)
             if [ ! -z "${{ secrets.GUILD_ID }}" ]; then

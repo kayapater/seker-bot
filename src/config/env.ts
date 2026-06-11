@@ -14,5 +14,6 @@ export const env = {
   token: process.env.DISCORD_TOKEN as string,
   clientId: process.env.CLIENT_ID as string,
   guildId: process.env.GUILD_ID as string | undefined,
+  botStatus: process.env.BOT_STATUS || 'Aktif!',
 };
 

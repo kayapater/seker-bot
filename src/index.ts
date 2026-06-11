@@ -623,7 +623,7 @@ client.once(Events.ClientReady, (readyClient) => {
   readyClient.user.setPresence({
     activities: [{ 
       type: 4, // Custom status
-      state: 'Annemi bekliyorum...',
+      state: env.botStatus,
       name: 'custom'
     }],
     status: 'online',
