@@ -1,0 +1,55 @@
+name: Deploy Seker Bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploying to VDS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VDS_HOST }}
+          username: ${{ secrets.VDS_USER }}
+          key: ${{ secrets.VDS_SSH_KEY }}
+          script: |
+            # Hedef klasöre git (Eğer yoksa oluştur ve git başlat)
+            APP_DIR="/root/seker-bot"
+            if [ ! -d "$APP_DIR" ]; then
+              mkdir -p "$APP_DIR"
+              cd "$APP_DIR"
+              git init
+              git remote add origin https://github.com/kayapater/seker-bot.git
+            else
+              cd "$APP_DIR"
+            fi
+
+            # Kodları çek
+            git fetch --all
+            git reset --hard origin/main
+
+            # Bağımlılıkları kur ve derle
+            npm install
+            npm run build
+
+            # .env dosyasını GitHub Secrets'tan oluştur
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
+            echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
+            
+            # Eğer varsa sunucuya özel diğer ayarları da ekleyelim (Örn: GUILD_ID)
+            if [ ! -z "${{ secrets.GUILD_ID }}" ]; then
+              echo "GUILD_ID=${{ secrets.GUILD_ID }}" >> .env
+            fi
+
+            # PM2 ile botu başlat veya yeniden başlat
+            if pm2 list | grep -q "seker-bot"; then
+              pm2 restart seker-bot
+            else
+              pm2 start dist/index.js --name seker-bot
+            fi
+            
+            # Kaydet (Sunucu yeniden başlarsa botun kalkması için)
+            pm2 save
