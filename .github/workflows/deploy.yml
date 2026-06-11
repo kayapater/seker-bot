@@ -16,9 +16,9 @@ jobs:
           username: ${{ secrets.VDS_USER }}
           key: ${{ secrets.VDS_SSH_KEY }}
           script: |
-            # Hedef klasöre git (Eğer yoksa oluştur ve git başlat)
             APP_DIR="/root/seker-bot"
-            if [ ! -d "$APP_DIR" ]; then
+            if [ ! -d "$APP_DIR/.git" ]; then
+              echo "Folder exists but is not a git repo or doesn't exist. Re-initializing..."
               mkdir -p "$APP_DIR"
               cd "$APP_DIR"
               git init
